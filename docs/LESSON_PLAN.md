@@ -27,6 +27,7 @@ By the end I can:
 
 1. Sketch the layout and mock it up at full size.
 2. Calculate the power budget from measured draw.
+   - 🎥 [Beware of Bad LiPos — Collin's Lab Notes (Adafruit)](https://www.youtube.com/watch?v=ILArrTIMFyM) — watch before buying any bare LiPo cell or pack; a BMS is not optional.
 3. Get the display working before committing to the enclosure.
 4. Test the full stack loose on the bench.
 5. Build the enclosure and mount everything.

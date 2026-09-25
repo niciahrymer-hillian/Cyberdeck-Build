@@ -1,9 +1,729 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Cyberdeck-Build — Tour</title>
-<style>body{margin:0;font-family:-apple-system,sans-serif;background:#0d0d12;color:#e6e6e6}
-header{padding:18px 24px;border-bottom:1px solid #ffffff14}main{display:grid;grid-template-columns:1fr 1fr;min-height:60vh}
-.lesson,.practice{padding:24px}.lesson{border-right:1px solid #ffffff14}h1,h2{color:#64748B}
-textarea{width:100%;min-height:240px;background:#0000005c;color:#e6e6e6;border:1px solid #ffffff1a;border-radius:8px;padding:12px;font-family:ui-monospace,monospace}</style></head>
-<body><header><h1>Cyberdeck-Build — Interactive Tour (TODO)</h1><p>4-lesson split-panel tour scaffold + Check Your Understanding quiz. See docs/LESSON_PLAN.md.</p></header>
-<main><section class="lesson"><h2>Lesson 1 — TODO</h2><p>Concept + wiring diagram on the left.</p></section>
-<section class="practice"><h3>Practice (TODO)</h3><textarea>// TODO starter code / config</textarea></section></main></body></html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyberdeck Build &mdash; Interactive Tour</title>
+<style>
+  :root { --bg:#0e1116; --accent:#94a3b8; --accent-deep:#64748B; --panel:#0000002e;
+          --text:#e6e6e6; --muted:#9aa0a6; --good:#4ade80; --bad:#f87171; --warn:#fbbf24; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  header{padding:18px 24px;border-bottom:1px solid #ffffff14}
+  header h1{margin:0;font-size:20px;color:var(--accent)}
+  header p{margin:6px 0 0;color:var(--muted);font-size:13px}
+  header .persist-note{margin-top:4px;font-size:11px;color:var(--muted);opacity:.8}
+  .badge{display:inline-block;background:var(--accent-deep);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:8px}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;padding:12px 24px;border-bottom:1px solid #ffffff14}
+  .pill{font-size:12px;padding:4px 10px;border:1px solid #ffffff22;border-radius:999px;color:var(--muted);cursor:pointer;background:transparent}
+  .pill.active{background:var(--accent);color:#0e1116;font-weight:600;border-color:var(--accent)}
+  .pill.done{border-color:var(--good);color:var(--good)}
+  .pill.tool{border-style:dashed}
+  main{display:grid;grid-template-columns:1fr 1fr;min-height:60vh}
+  @media (max-width:880px){main{grid-template-columns:1fr}.lesson{border-right:none!important;border-bottom:1px solid #ffffff14}}
+  .lesson,.practice{padding:22px 24px}
+  .lesson{border-right:1px solid #ffffff14}
+  .lesson h2{color:var(--accent);margin-top:0;font-size:18px}
+  .lesson ul{padding-left:18px}.lesson li{margin:6px 0}
+  .trap{border-left:3px solid var(--warn);background:#fbbf2410;padding:10px 12px;border-radius:4px;margin:12px 0;font-size:14px}
+  .trap b{color:var(--warn)}
+  .worked{border-left:3px solid var(--accent-deep);background:#ffffff08;padding:10px 12px;border-radius:4px;margin:12px 0;font-size:14px}
+  figure{margin:14px 0}figcaption{color:var(--muted);font-size:12px;margin-top:6px}
+  .practice h3{margin-top:0;color:var(--accent);font-size:16px}
+  .nav{display:flex;gap:10px;align-items:center;padding:14px 24px;border-top:1px solid #ffffff14}
+  button{font:inherit}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+  button.ghost:disabled{opacity:.35;cursor:not-allowed}
+  .counter{color:var(--muted);font-size:13px;margin-left:auto}
+  .qc{margin-top:16px;border-top:1px solid #ffffff14;padding-top:14px}
+  .qc h4{margin:0 0 8px;font-size:14px;color:var(--accent)}
+  .opt{all:unset;display:flex;align-items:center;gap:8px;padding:8px 10px;margin:4px 0;border:1px solid #ffffff1a;border-radius:8px;cursor:pointer;font-size:14px}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{border-color:var(--good);background:#4ade8018}
+  .opt.wrong{border-color:var(--bad);background:#f8717118}
+  .opt[disabled]{cursor:default}
+  .explain{display:none;margin-top:8px;font-size:13px;color:var(--muted);border-left:2px solid var(--accent-deep);padding-left:10px}
+  .links{margin-top:14px;font-size:13px}
+  .links a{color:var(--accent);display:inline-block;margin:3px 0}
+  .links .kind{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-right:6px}
+  .video-card{display:flex;gap:10px;align-items:center;border:1px solid #ffffff1a;border-radius:8px;padding:8px;text-decoration:none;color:var(--text);margin-top:6px}
+  .video-card:hover{border-color:var(--accent)}
+  .video-card-thumb{width:96px;height:54px;border-radius:4px;background-size:cover;background-position:center;position:relative;flex-shrink:0}
+  .video-card-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;text-shadow:0 0 6px #000}
+  .video-card-info b{display:block;font-size:13px}
+  .video-card-info span{color:var(--muted);font-size:12px}
+  table.cheat{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+  table.cheat td,table.cheat th{border:1px solid #ffffff14;padding:6px 8px;text-align:left}
+  table.cheat th{color:var(--accent)}
+  code{background:#ffffff12;padding:1px 5px;border-radius:3px;font-family:ui-monospace,monospace;font-size:13px}
+  .quiz-wrap{padding:22px 24px;border-top:1px solid #ffffff14}
+  .q{margin-bottom:18px}.q p{font-weight:600;margin:0 0 6px}
+  #score{font-weight:700;color:var(--accent)}
+  .flash-stage{display:flex;justify-content:center;padding:18px 0;perspective:1200px}
+  .flash-card{width:min(420px,90%);height:190px;position:relative;cursor:pointer;transform-style:preserve-3d;transition:transform .45s}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid #ffffff22;border-radius:12px;
+              display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;font-size:16px}
+  .flash-front{background:#ffffff08;color:var(--text);font-weight:700}
+  .flash-back{background:var(--accent-deep);color:#fff;transform:rotateY(180deg);font-size:14px;font-weight:400}
+  .flash-controls{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .match-col{display:flex;flex-direction:column;gap:8px}
+  .match-btn{all:unset;padding:10px 12px;border:1px solid #ffffff1a;border-radius:8px;cursor:pointer;font-size:13px;text-align:left}
+  .match-btn:hover{border-color:var(--accent)}
+  .match-btn.sel{border-color:var(--accent);background:#94a3b818}
+  .match-btn.matched{border-color:var(--good);background:#4ade8018;opacity:.55;cursor:default}
+  .match-btn.wrong{border-color:var(--bad);background:#f8717118}
+  .budget-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  .budget-table th{color:var(--accent);text-align:left;padding:6px 8px;border-bottom:1px solid #ffffff1a}
+  .budget-table td{padding:6px 8px;border-bottom:1px solid #ffffff10}
+  .budget-table input[type=text]{width:100%;background:transparent;border:1px solid #ffffff1a;border-radius:6px;color:var(--text);padding:5px 7px;font:inherit}
+  .budget-table input[type=number]{width:90px;background:transparent;border:1px solid #ffffff1a;border-radius:6px;color:var(--text);padding:5px 7px;font:inherit}
+  .budget-summary{display:flex;gap:24px;flex-wrap:wrap;margin-top:16px;padding:14px;border:1px solid #ffffff1a;border-radius:8px;background:#ffffff06}
+  .budget-summary div b{display:block;font-size:22px;color:var(--accent)}
+  .budget-summary div span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .budget-controls{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;align-items:end}
+  .budget-controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);gap:4px}
+  .budget-controls input{background:transparent;border:1px solid #ffffff1a;border-radius:6px;color:var(--text);padding:6px 8px;font:inherit;width:120px}
+  .report-card{border:1px solid #ffffff22;border-radius:10px;padding:20px 22px;max-width:560px}
+  .report-card h4{margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .report-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #ffffff10;font-size:14px}
+  .report-row .grade{font-weight:700}
+  .grade-A{color:var(--good)} .grade-B{color:#a3e635} .grade-C{color:var(--warn)} .grade-D,.grade-F{color:var(--bad)} .grade-dash{color:var(--muted)}
+  .report-overall{display:flex;align-items:baseline;gap:10px;margin:14px 0}
+  .report-overall .big{font-size:40px;font-weight:800}
+  #printBtn{margin-top:16px}
+  @media print{
+    header .persist-note, .pills, #nav, .report-card #printBtn{display:none!important}
+    body{background:#fff;color:#111}
+    .report-card{border-color:#ccc;max-width:none}
+    .report-row{border-bottom-color:#ddd}
+  }
+</style></head>
+<body>
+<header>
+  <h1>Cyberdeck Build <span class="badge">Chain K &middot; Hands-on</span></h1>
+  <p>Power budgeting &rarr; display selection &rarr; assembly order &amp; thermals &rarr; real-world
+     testing. Plan the power budget in the Power Budget Planner tab before you buy a battery.</p>
+  <p class="persist-note">Progress (quick checks, quiz score, flashcards known) saves in this browser
+     only &mdash; localStorage, not an account. Clearing site data or switching browsers resets it.</p>
+</header>
+
+<div class="pills" id="pills"></div>
+
+<main>
+  <section class="lesson" id="lesson"></section>
+  <section class="practice" id="practice"></section>
+</main>
+
+<div class="nav" id="nav">
+  <button class="ghost" id="prev">&larr; Previous</button>
+  <button class="ghost" id="next">Next &rarr;</button>
+  <span class="counter" id="counter"></span>
+</div>
+
+<div class="quiz-wrap" id="quizWrap" style="display:none">
+  <h3 style="color:var(--accent);margin-top:0">Check Your Understanding</h3>
+  <div id="quiz"></div>
+  <p>Score: <span id="score">0</span> / <span id="total"></span></p>
+</div>
+
+<div class="quiz-wrap" id="toolWrap" style="display:none"></div>
+
+<script>
+const LESSONS = [
+{
+  short:"Power budget",
+  title:"Power budgeting: measure, don't guess",
+  body:`<p>A cyberdeck's runtime is decided before you ever touch a soldering iron — it's arithmetic, and
+  the arithmetic is only as good as the numbers you feed it.</p>
+  <ul><li>Datasheet/nameplate current is a <b>ceiling</b>, not what your specific build draws. A Pi 5's
+  quoted peak current happens under sustained full CPU load with every peripheral active — your actual
+  average draw while reading a terminal is lower, but a video call is higher.</li>
+  <li>Measure <b>real draw</b> with an inline USB power meter, under the load you'll actually run
+  (screen on, wifi active, whatever workload matters), not idle and not synthetic peak.</li>
+  <li>A "10,000mAh" USB power bank does <b>not</b> deliver 10,000mAh at 5V to your load. The cells inside
+  store energy at ~3.7V; a boost converter steps that up to 5V, and that conversion loses roughly
+  15–20% to heat. Budget against <i>usable</i> capacity, not the number printed on the case.</li></ul>
+  <div class="trap"><b>The trap:</b> summing every component's absolute maximum rated current and
+  concluding the build is impossible, or trusting idle-state figures and being shocked when real runtime
+  is a third of the estimate. Neither extreme is your actual number — measure the real workload.</div>
+  <div class="worked"><b>Worked:</b> Pi 5 under typical desktop-ish load (~900mA) + a 7" touchscreen with
+  backlight on (~300mA) + a wireless keyboard/mouse dongle (~50mA) ≈ <b>1250mA</b> total. A 10,000mAh
+  bank at 85% conversion efficiency gives ≈8500mAh usable. Runtime ≈ 8500 / 1250 ≈ <b>6.8 hours</b> —
+  and that's still optimistic versus a workload with active wifi transfers or a brighter screen.</div>`,
+  practice:`<h3>Practice — Power Budget Planner</h3>
+  <ol><li>Open the <b>Power Budget Planner</b> tab and enter your own component list and draw figures.</li>
+  <li>Try the worked example's numbers first, confirm you get ~6.8 hours, then adjust the backlight draw
+  up (brighter screen) and watch the estimate change.</li></ol>`,
+  quick:{ q:"A power bank is labeled 10,000mAh. Why won't you get 10,000mAh of usable capacity at 5V?",
+    choices:["The cells store energy at ~3.7V and lose ~15–20% converting up to 5V","Power banks always overstate their capacity by exactly half","5V devices draw less current so the math doesn't apply","mAh ratings are only valid at 3.7V, never usable at other voltages"],
+    a:0, ex:"The printed mAh figure is measured at the cell's native ~3.7V. Boosting that to a regulated 5V output isn't lossless — budget against the reduced, real usable capacity, not the label." },
+  links:[
+    {type:"read", label:"SparkFun — Single-Cell LiPo Battery Care (charging safely)", url:"https://learn.sparkfun.com/tutorials/single-cell-lipo-battery-care/charging-lipo-batteries-safely"},
+    {type:"watch", label:"Beware of Bad LiPos — Collin's Lab Notes", url:"https://www.youtube.com/watch?v=ILArrTIMFyM", channel:"Adafruit Industries", vid:"ILArrTIMFyM"}
+  ]
+},
+{
+  short:"Display",
+  title:"Choosing and configuring a display",
+  body:`<p>The display is the single component most likely to eat a weekend if you pick wrong, and the
+  difference between DSI and HDMI touchscreens is bigger than it looks in a spec sheet.</p>
+  <ul><li><b>DSI (Display Serial Interface)</b> connects through the Pi's dedicated display connector via
+  a flat ribbon cable — one connection, official displays, the best driver support of any option.</li>
+  <li><b>HDMI touchscreens</b> need <i>two</i> connections: HDMI for video, a separate USB cable for
+  touch input. That's an extra cable to route and strain-relieve inside an enclosure, and generic panels
+  often need manual <code>config.txt</code> overlay entries to get resolution/timing right.</li>
+  <li><code>dtoverlay=</code> lines in <code>/boot/firmware/config.txt</code> configure non-standard
+  display timing and rotation — this is where you'll spend time if you didn't buy an official/well
+  documented panel.</li></ul>
+  <div class="trap"><b>The trap:</b> assuming rotating the display also rotates the touch input.
+  <code>display_lcd_rotate=</code> (or the older overlay-based rotation) flips the video, but touch
+  coordinates are a <i>separate</i> mapping — without its own transform matrix, a rotated screen reports
+  touches as if it were still in the original orientation. Video working ≠ touch working.</div>
+  <div class="worked"><b>Worked:</b> the Build Order's own rule — "get the display working before
+  committing to the enclosure" — exists because a DSI ribbon cable length and an HDMI+USB cable pair take
+  up genuinely different physical space and routing. Deciding the enclosure's internal layout before the
+  display is confirmed working means guessing at a dimension you don't actually have yet.</div>`,
+  practice:`<h3>Practice — before you cut anything</h3>
+  <ol><li>Get your chosen display fully working on the bench — video <i>and</i> touch, at the rotation
+  you actually intend to use — before drawing a single enclosure dimension.</li>
+  <li>If using an HDMI touchscreen, confirm touch coordinates are still correct after setting rotation.
+  This is the step people skip and then debug blind once the panel is already mounted.</li></ol>`,
+  quick:{ q:"You rotated the display 90° in config.txt and the video looks correct, but touches now land in the wrong place. What's missing?",
+    choices:["A separate touch coordinate transform matrix for the new rotation","A driver reinstall","A different HDMI cable","Nothing — this always self-corrects after a reboot"],
+    a:0, ex:"Display rotation and touch-input rotation are handled separately. Video rotating correctly tells you nothing about whether the touch coordinate mapping was updated to match." },
+  links:[
+    {type:"read", label:"Raspberry Pi Documentation — Touch Display", url:"https://www.raspberrypi.com/documentation/accessories/display.html"}
+  ]
+},
+{
+  short:"Assembly & thermals",
+  title:"Assembly order and thermal management",
+  body:`<p>A cyberdeck fails for mechanical reasons as often as electrical ones, and both failure modes
+  follow the same pattern: skipping a step because it seems like it'll obviously be fine.</p>
+  <ul><li><b>Electronics before enclosure, always.</b> Test the full stack — Pi, display, keyboard,
+  battery — loose on a bench before any cutting, printing, or drilling. A wiring or driver problem found
+  after the enclosure is built means redoing enclosure work, not just re-wiring.</li>
+  <li><b>Strain relief:</b> a wire routed taut looks fine on day one. Flexing the deck, closing a lid,
+  just carrying it around — that repeated small movement stresses a taut connector joint until it fails,
+  often intermittently before it fails completely. Route every wire with a small service loop.</li>
+  <li><b>Thermal throttling:</b> the Pi automatically downclocks itself when it gets too hot — a sealed
+  enclosure with no airflow will trigger this, and a throttled Pi is a slower, less responsive machine,
+  not a broken one, which makes the cause easy to misdiagnose as a software problem.</li></ul>
+  <div class="trap"><b>The trap:</b> gluing in a heatsink and assuming the thermal problem is solved. A
+  heatsink only works by moving heat into air that's actually flowing past its fins — inside a fully
+  sealed box, it just becomes a slightly larger hot mass with nowhere to shed that heat to. You need a
+  vent, a fan, or both; a heatsink alone in a sealed enclosure is closer to placebo than solution.</div>
+  <div class="worked"><b>Worked:</b> a realistic build order — bench-test everything loose, confirm
+  display + touch + battery runtime, <i>then</i> design the enclosure around the confirmed-working
+  layout with vent placement decided by where heat actually needs to go, not as an afterthought once the
+  case is already printed.</div>`,
+  practice:`<h3>Practice — plan your vent placement</h3>
+  <ol><li>Before finalizing an enclosure design, sketch where heat needs to exit and where cool air can
+  enter — near the Pi's SoC, ideally with a path that doesn't just recirculate warm air.</li>
+  <li>If you have real hardware: run a sustained CPU-loaded task (e.g. <code>stress-ng</code> or a video
+  encode) with the case closed and check <code>vcgencmd measure_temp</code> before and after. Compare
+  against the same test with the case open.</li></ol>`,
+  quick:{ q:"You glued a heatsink onto the Pi's SoC inside a fully sealed 3D-printed enclosure with no vents. What happens under sustained load?",
+    choices:["It still thermal-throttles — the heatsink has nowhere to shed heat without airflow","The heatsink alone fully prevents throttling regardless of airflow","The Pi runs cooler than with no heatsink, sealed or not","Sealing the case actually improves cooling by trapping heat evenly"],
+    a:0, ex:"A heatsink moves heat away from the chip into the heatsink's mass — but without moving air past its fins, that heat has nowhere further to go, and the enclosure's internal air temperature just rises until it throttles anyway." },
+  links:[
+    {type:"read", label:"Raspberry Pi Documentation — Touch Display (mounting notes apply to enclosure design generally)", url:"https://www.raspberrypi.com/documentation/accessories/display.html"}
+  ]
+},
+{
+  short:"Real-world testing",
+  title:"Testing on battery and trimming the OS",
+  body:`<p>The build isn't done when it boots on the bench — it's done when you've verified it does what
+  you designed it to do, under real conditions, on battery.</p>
+  <ul><li><b>Measured endurance is usually shorter than calculated endurance.</b> Lesson 1's math is a
+  planning estimate, not a guarantee — wifi scanning, screen brightness, and background processes all
+  add draw the calculation didn't necessarily account for precisely. Run it on battery, time it, compare
+  against your budget.</li>
+  <li><b>Trim the OS for the hardware you actually have.</b> A full desktop environment with compositing
+  effects costs both power and thermal headroom you may not have to spare on a battery- and
+  enclosure-constrained device. Raspberry Pi OS Lite plus a minimal window manager, or a single
+  kiosk-mode application, both reduce load meaningfully.</li>
+  <li><b>Disable what you don't need.</b> The same systemd skills from Raspberry-Pi-Tinkering apply
+  directly here — a background service you're not using is drawing power and CPU for nothing.</li></ul>
+  <div class="trap"><b>The trap:</b> treating the Lesson 1 power budget as the final answer instead of a
+  planning estimate, and being surprised when real-world runtime comes in lower. The calculation tells
+  you roughly what to expect and lets you catch a wildly undersized battery before buying it — it
+  doesn't replace actually timing a real discharge.</div>
+  <div class="worked"><b>Worked:</b> calculated 6.8 hours from Lesson 1's numbers; measured real runtime
+  under normal use came in at 5.2 hours because of intermittent wifi activity the static calculation
+  didn't model. That gap is normal — budget a safety margin, and treat the calculated figure as a floor
+  to design against, not a promise to the user (even when the user is just you).</div>`,
+  practice:`<h3>Practice — verify, don't assume</h3>
+  <ol><li>If you have real hardware: fully charge the battery, note the start time, use the deck
+  normally, and time how long it actually runs. Compare against your Lesson 1 calculation.</li>
+  <li>Try switching from a full desktop environment to Raspberry Pi OS Lite (or disabling compositing)
+  and re-measure — quantify how much of a difference OS trimming actually makes on your specific build.</li></ol>`,
+  quick:{ q:"Your Lesson-1 calculation predicted 6.8 hours of runtime; real-world testing gave 5.2 hours. What's the right conclusion?",
+    choices:["This is a normal gap — the calculation is a planning estimate, and real conditions add draw it didn't model","The calculation was worthless and shouldn't have been done","The battery is defective and should be returned","5.2 hours means the Pi is drawing an impossible amount of current"],
+    a:0, ex:"A ~20% gap between calculated and measured runtime is unsurprising — wifi activity, brightness, and background load all add real-world draw a static planning calculation can't fully capture. The calculation's job was to catch a wildly undersized battery before purchase, which it did." },
+  links:[
+    {type:"read", label:"Raspberry Pi Documentation — Remote access / SSH (for headless-trimming the OS remotely)", url:"https://www.raspberrypi.com/documentation/remote-access/ssh/en/"}
+  ]
+}
+];
+
+const QUIZ = [
+ {q:"A USB power meter reads 1.1A draw under your actual workload. The Pi's datasheet lists a 'typical' figure of 600mA. What should you budget against?",
+  o:["The measured 1.1A — your actual workload, not the datasheet's typical figure","The datasheet's 600mA, since it's the official number","The average of the two figures","Whichever number gives a longer estimated runtime"],c:0,
+  ex:"Datasheet 'typical' figures describe a reference workload that may not match yours. Measured draw under your real conditions is always the more trustworthy number to budget against."},
+ {q:"What's the practical difference between a DSI and an HDMI touchscreen for a cyberdeck build?",
+  o:["DSI is one ribbon cable with strong driver support; HDMI touch needs a separate USB cable for touch input","They're functionally identical, just different connector shapes","HDMI touchscreens don't support touch at all","DSI requires more power than HDMI"],c:0,
+  ex:"DSI carries video (and sometimes touch) over one dedicated connector with official driver support. HDMI only carries video — touch needs its own separate USB connection, meaning more cables to route."},
+ {q:"Why does rotating a display in config.txt sometimes leave touch input in the wrong place?",
+  o:["Touch coordinates use a separate transform matrix that rotation doesn't automatically update","Rotation always breaks touch permanently","Only DSI displays support rotation correctly","Touch input ignores display orientation entirely by design"],c:0,
+  ex:"Video rotation and touch-coordinate mapping are handled by separate mechanisms. Getting video right after rotating tells you nothing about whether touch was remapped to match."},
+ {q:"What's the actual risk of gluing a heatsink into a fully sealed 3D-printed enclosure with no vents?",
+  o:["It still throttles — a heatsink needs moving air past it to actually shed heat","No risk — sealed enclosures cool better because they trap heat evenly","The heatsink will overheat and catch fire","Sealed enclosures only affect battery life, not thermals"],c:0,
+  ex:"A heatsink works by transferring heat to air that's moving past its fins. With no airflow, it just becomes extra thermal mass — the enclosure's internal air still heats up and the Pi still throttles."},
+ {q:"Why does a '10,000mAh' USB power bank deliver noticeably less than 10,000mAh of usable capacity at its 5V output?",
+  o:["The cells store energy at ~3.7V, and boost-converting to 5V loses roughly 15-20% to conversion inefficiency","Power bank capacity ratings are always fraudulent","5V devices consume mAh twice as fast as 3.7V devices","The rating only applies when the bank is brand new"],c:0,
+  ex:"The printed capacity is measured at the cell's native voltage (~3.7V). Stepping that up to a regulated 5V output isn't lossless conversion — budget against the reduced, real usable capacity."},
+ {q:"The Build Order says to get the display working before committing to the enclosure. Why does that ordering matter specifically?",
+  o:["DSI ribbon cables and HDMI+USB cable pairs need genuinely different physical space, which affects enclosure dimensions", "It's an arbitrary convention with no real dimensional impact", "The display must be tested before the Pi boots at all", "Enclosure material choice depends on which OS you're running"],c:0,
+  ex:"Different display connection types have different cable-routing needs. Designing enclosure dimensions before confirming which display and connection type is actually working means guessing at space requirements you don't have real numbers for yet."},
+ {q:"Real-world battery testing gave a shorter runtime than the Lesson 1 calculation predicted. What's the correct takeaway?",
+  o:["This is a normal, expected gap — real conditions add draw a static calculation can't fully model", "The calculation method is fundamentally broken and should be abandoned", "The battery must be defective", "Runtime calculations are only useful for HDMI displays, not DSI"],c:0,
+  ex:"A calculated power budget is a planning estimate meant to catch a badly undersized battery before purchase — not a guarantee of real-world runtime. A modest gap between calculated and measured is expected, not a sign of failure."}
+];
+
+/* Key terms — pulled from the bolded terms across the four lessons above. */
+const KEY_TERMS = [
+  ["Power budget", "The total current draw of every component in the build, sized against battery capacity to hit a target runtime."],
+  ["Real (measured) draw vs nameplate", "Datasheet peak/typical ratings describe a reference workload — measure actual draw with a USB power meter under your real conditions instead."],
+  ["USB power meter (inline tester)", "The tool for measuring actual current draw under real load, rather than trusting datasheet figures."],
+  ["Boost-converter efficiency", "Power banks store energy at ~3.7V and convert up to 5V output, losing roughly 15-20% to conversion inefficiency — budget against usable capacity, not the printed mAh rating."],
+  ["DSI (Display Serial Interface)", "The Pi's dedicated display connector — one ribbon cable, the best driver support of any display option."],
+  ["HDMI touchscreen", "Needs a separate USB cable for touch input in addition to HDMI for video — two connections to route, not one."],
+  ["config.txt overlay (dtoverlay)", "Lines in /boot/firmware/config.txt that configure non-standard display timing and rotation for panels without official driver support."],
+  ["Touch coordinate transform", "A separate mapping from display rotation — rotating the video doesn't automatically rotate where touches are reported."],
+  ["\"Electronics before enclosure\"", "Test the full stack loose on a bench before any cutting, printing, or drilling — a problem found after the case is built means redoing enclosure work."],
+  ["Strain relief / service loop", "A small amount of slack routed into a wire so repeated flexing doesn't stress a connector joint until it fails."],
+  ["Thermal throttling", "The Pi automatically downclocks itself when it overheats — it presents as a slower machine, not an obviously broken one."],
+  ["Heatsink without airflow", "A heatsink only sheds heat into moving air — glued into a sealed enclosure with no vents, it becomes extra thermal mass, not a fix."],
+  ["BMS (Battery Management System)", "The protection circuit a LiPo/Li-ion pack needs against over-charge, over-discharge, and output shorts — never use bare cells without one."],
+  ["Runtime estimate formula", "Battery mAh × conversion efficiency ÷ total load mA ≈ estimated hours of runtime."],
+  ["Kiosk mode / minimal window manager", "Trimming OS overhead (compositing effects, unused services) to save power and thermal headroom on constrained hardware."],
+  ["Raspberry Pi OS Lite", "A desktop-environment-free OS image — lower power and thermal load than the full desktop image, useful once hardware is power/thermal constrained."],
+  ["Measured vs calculated endurance", "Real-world runtime is usually somewhat shorter than a static power-budget calculation predicts — verify by actually timing a discharge."],
+  ["Li-ion/LiPo cell safety", "No-name cells with no brand marking and no BMS are a genuine fire risk — never charge or use unattended."]
+];
+
+const STATE_KEY = 'chainK_cyberdeckBuild_v1';
+function loadState(){
+  try{ const raw = localStorage.getItem(STATE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
+}
+// One save function for everything, including the Power Budget Planner's state
+// further down the file (safe to reference before their `let` declarations run —
+// this function isn't called until user interaction, well after the full script
+// has executed once). Two independent save functions previously meant whichever
+// saved last silently wiped the other's fields from localStorage.
+function saveState(){
+  try{
+    localStorage.setItem(STATE_KEY, JSON.stringify({
+      answered, quizScore: score, quizDone: [...done], fcKnown: [...fcKnown],
+      popLastScore, popLastTotal, popAttemptsCount, matchBestAttempts,
+      budgetComponents, budgetBatteryMah, budgetEfficiencyPct
+    }));
+  }catch(e){ /* storage unavailable — progress just won't persist this session */ }
+}
+const SAVED = loadState();
+
+let idx = 0;
+const answered = SAVED && Array.isArray(SAVED.answered) && SAVED.answered.length === LESSONS.length
+  ? SAVED.answered.slice() : new Array(LESSONS.length).fill(false);
+
+function videoCard(l){
+  return `<a class="video-card" href="${l.url}" target="_blank" rel="noopener">
+    <span class="video-card-thumb" style="background-image:url('https://img.youtube.com/vi/${l.vid}/hqdefault.jpg')">
+      <span class="video-card-play">&#9658;</span></span>
+    <span class="video-card-info"><b>${l.label}</b><span>${l.channel} &middot; opens on YouTube</span></span></a>`;
+}
+function renderLinks(links){
+  if(!links || !links.length) return '';
+  const rows = links.map(l => l.type === 'watch'
+    ? videoCard(l)
+    : `<div><span class="kind">${l.type}</span><a href="${l.url}" target="_blank" rel="noopener">${l.label}</a></div>`).join('');
+  return `<div class="links"><h4 style="margin:0 0 6px;font-size:14px;color:var(--accent)">Continue learning</h4>${rows}</div>`;
+}
+function renderQuick(i){
+  const q = LESSONS[i].quick;
+  if(!q) return '';
+  const isDone = answered[i];
+  return `<div class="qc"><h4>Quick check</h4><p style="margin:0 0 6px;font-size:14px">${q.q}</p>
+    <div id="qcopts">${q.choices.map((c,ci)=>`<button class="opt ${isDone && ci===q.a?'correct':''}" data-ci="${ci}" ${isDone?'disabled':''}>${c}</button>`).join('')}</div>
+    <div class="explain" id="qcex" style="${isDone?'display:block':''}">${isDone?q.ex:''}</div></div>`;
+}
+
+const TOOLS = ['Flashcards','Match','Pop Quiz','Cheat Sheet','Power Budget Planner','Report Card'];
+function pillsHTML(){
+  const lessonPills = LESSONS.map((l,i)=>
+    `<button class="pill ${i===idx?'active':''} ${answered[i]?'done':''}" data-i="${i}">${i+1}. ${l.short}</button>`).join('');
+  const quizPill = `<button class="pill ${idx===LESSONS.length?'active':''}" data-i="${LESSONS.length}">Quiz</button>`;
+  const toolPills = TOOLS.map((t,ti)=>{
+    const i = LESSONS.length + 1 + ti;
+    return `<button class="pill tool ${i===idx?'active':''}" data-i="${i}">${t}</button>`;
+  }).join('');
+  return lessonPills + quizPill + toolPills;
+}
+function render(){
+  document.getElementById('pills').innerHTML = pillsHTML();
+  const isQuiz = idx === LESSONS.length;
+  const isTool = idx > LESSONS.length;
+  document.querySelector('main').style.display = (isQuiz || isTool) ? 'none' : 'grid';
+  document.getElementById('quizWrap').style.display = isQuiz ? 'block' : 'none';
+  document.getElementById('toolWrap').style.display = isTool ? 'block' : 'none';
+  document.getElementById('nav').style.display = isTool ? 'none' : 'flex';
+  if(isTool){ renderTool(idx - LESSONS.length - 1); return; }
+  if(isQuiz){ document.getElementById('counter').textContent = 'Final quiz'; renderQuiz(); syncNav(); return; }
+  const L = LESSONS[idx];
+  document.getElementById('lesson').innerHTML =
+    `<h2>${idx+1}. ${L.title}</h2>${L.body}${renderLinks(L.links)}${renderQuick(idx)}`;
+  document.getElementById('practice').innerHTML = L.practice;
+  document.getElementById('counter').textContent = `Lesson ${idx+1} of ${LESSONS.length}`;
+  const opts = document.getElementById('qcopts');
+  if(opts) opts.addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if(!b || b.disabled) return;
+    const q = LESSONS[idx].quick, pick = +b.dataset.ci;
+    [...opts.children].forEach((el,ci)=>{ el.disabled = true;
+      if(ci===q.a) el.classList.add('correct'); else if(ci===pick) el.classList.add('wrong'); });
+    const ex = document.getElementById('qcex'); ex.textContent = q.ex; ex.style.display='block';
+    answered[idx] = true;
+    saveState();
+    syncNav(); render2Pills();
+  });
+  syncNav();
+}
+function render2Pills(){
+  document.querySelectorAll('.pill').forEach((p,i)=>{ if(answered[i]) p.classList.add('done'); });
+}
+function syncNav(){
+  document.getElementById('prev').disabled = idx === 0;
+  const n = document.getElementById('next');
+  const gated = idx < LESSONS.length && !answered[idx];
+  n.disabled = idx > LESSONS.length - 1 || gated;
+  n.textContent = gated ? 'Answer the quick check to continue' : 'Next →';
+}
+
+let score = SAVED && Number.isFinite(SAVED.quizScore) ? SAVED.quizScore : 0;
+let done = new Set(SAVED && Array.isArray(SAVED.quizDone) ? SAVED.quizDone : []);
+function renderQuiz(){
+  document.getElementById('total').textContent = QUIZ.length;
+  document.getElementById('quiz').innerHTML = QUIZ.map((it,qi)=>{
+    const isDone = done.has(qi);
+    return `<div class="q"><p>${qi+1}. ${it.q}</p>
+      <div data-q="${qi}">${it.o.map((o,oi)=>`<button class="opt ${isDone && oi===it.c?'correct':''}" data-q="${qi}" data-o="${oi}" ${isDone?'disabled':''}>${o}</button>`).join('')}</div>
+      <div class="explain" id="qex${qi}" style="${isDone?'display:block':''}">${isDone?it.ex:''}</div></div>`;
+  }).join('');
+  document.getElementById('score').textContent = score;
+}
+document.getElementById('quiz').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if(!b || b.disabled) return;
+  const qi = +b.dataset.q, oi = +b.dataset.o, it = QUIZ[qi];
+  if(done.has(qi)) return; done.add(qi);
+  b.parentElement.querySelectorAll('.opt').forEach((el,i)=>{ el.disabled = true;
+    if(i===it.c) el.classList.add('correct'); else if(i===oi) el.classList.add('wrong'); });
+  const ex = document.getElementById('qex'+qi); ex.textContent = it.ex; ex.style.display='block';
+  if(oi===it.c){ score++; document.getElementById('score').textContent = score; }
+  saveState();
+});
+
+function shuffled(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
+  return a;
+}
+function renderTool(view){
+  if(view===0) return renderFlash();
+  if(view===1) return renderMatch();
+  if(view===2) return renderPop();
+  if(view===3) return renderCheat();
+  if(view===4) return renderBudget();
+  if(view===5) return renderReportCard();
+}
+
+let fcIdx = 0;
+const fcKnown = new Set(SAVED && Array.isArray(SAVED.fcKnown) ? SAVED.fcKnown : []);
+function renderFlash(){
+  const t = KEY_TERMS[fcIdx];
+  document.getElementById('toolWrap').innerHTML = `
+    <h3 style="color:var(--accent);margin-top:0">Flashcards</h3>
+    <p style="color:var(--muted);font-size:13px">Click a card to flip it. ${fcKnown.size} / ${KEY_TERMS.length} marked known.</p>
+    <div class="flash-stage"><div class="flash-card" id="flashCard">
+      <div class="flash-face flash-front">${t[0]}</div>
+      <div class="flash-face flash-back">${t[1]}</div>
+    </div></div>
+    <div class="flash-controls">
+      <button class="ghost" id="fcPrev">&larr; Prev</button>
+      <span class="counter" style="margin:0 6px">${fcIdx+1} / ${KEY_TERMS.length}</span>
+      <button class="ghost" id="fcKnow">${fcKnown.has(fcIdx) ? '✓ Known' : 'Mark known'}</button>
+      <button class="ghost" id="fcNext">Next &rarr;</button>
+    </div>`;
+  document.getElementById('flashCard').onclick = () => document.getElementById('flashCard').classList.toggle('flipped');
+  document.getElementById('fcPrev').onclick = () => { fcIdx = (fcIdx - 1 + KEY_TERMS.length) % KEY_TERMS.length; renderFlash(); };
+  document.getElementById('fcNext').onclick = () => { fcIdx = (fcIdx + 1) % KEY_TERMS.length; renderFlash(); };
+  document.getElementById('fcKnow').onclick = () => {
+    if(fcKnown.has(fcIdx)) fcKnown.delete(fcIdx); else fcKnown.add(fcIdx);
+    saveState(); renderFlash();
+  };
+}
+
+let matchPairs = [], matchTermOrder = [], matchDefOrder = [], matchSel = null, matchMatched = new Set(), matchAttempts = 0;
+let matchBestAttempts = SAVED && Number.isFinite(SAVED.matchBestAttempts) ? SAVED.matchBestAttempts : null;
+function newMatchRound(){
+  const n = Math.min(8, KEY_TERMS.length);
+  const idxs = shuffled([...Array(KEY_TERMS.length).keys()]).slice(0, n);
+  matchPairs = idxs.map(i => ({ key:i, term:KEY_TERMS[i][0], def:KEY_TERMS[i][1] }));
+  matchTermOrder = shuffled(matchPairs);
+  matchDefOrder = shuffled(matchPairs);
+  matchSel = null; matchMatched = new Set(); matchAttempts = 0;
+}
+function matchBtn(p, side){
+  const isMatched = matchMatched.has(p.key);
+  const isSel = matchSel && matchSel.key === p.key && matchSel.side === side;
+  const label = side === 'term' ? p.term : p.def;
+  return `<button class="match-btn ${isMatched?'matched':''} ${isSel?'sel':''}" data-key="${p.key}" data-side="${side}" ${isMatched?'disabled':''}>${label}</button>`;
+}
+function matchStatusText(){
+  if(matchMatched.size === matchPairs.length) return `Solved in ${matchAttempts} attempts!`;
+  return `Match each term to its definition. Attempts: ${matchAttempts}`;
+}
+function renderMatch(){
+  if(!matchPairs.length) newMatchRound();
+  document.getElementById('toolWrap').innerHTML = `
+    <h3 style="color:var(--accent);margin-top:0">Match</h3>
+    <p style="color:var(--muted);font-size:13px" id="matchStatus">${matchStatusText()}</p>
+    <div class="match-grid">
+      <div class="match-col">${matchTermOrder.map(p => matchBtn(p,'term')).join('')}</div>
+      <div class="match-col">${matchDefOrder.map(p => matchBtn(p,'def')).join('')}</div>
+    </div>
+    <button class="ghost" id="matchNew" style="margin-top:14px">New round</button>`;
+  document.querySelectorAll('.match-btn').forEach(b => b.addEventListener('click', onMatchClick));
+  document.getElementById('matchNew').onclick = () => { newMatchRound(); renderMatch(); };
+}
+function onMatchClick(e){
+  const b = e.currentTarget;
+  const key = +b.dataset.key, side = b.dataset.side;
+  if(matchMatched.has(key)) return;
+  if(!matchSel || matchSel.side === side){ matchSel = { key, side }; renderMatch(); return; }
+  matchAttempts++;
+  if(matchSel.key === key){
+    matchMatched.add(key);
+    matchSel = null;
+    if(matchMatched.size === matchPairs.length){
+      if(matchBestAttempts === null || matchAttempts < matchBestAttempts) matchBestAttempts = matchAttempts;
+      saveState();
+    }
+    renderMatch();
+  } else {
+    b.classList.add('wrong');
+    const status = document.getElementById('matchStatus');
+    if(status) status.textContent = `Not quite. Attempts: ${matchAttempts}`;
+    setTimeout(() => { matchSel = null; renderMatch(); }, 500);
+  }
+}
+
+function popPool(){
+  const fromLessons = LESSONS.filter(l => l.quick).map(l => ({ q:l.quick.q, opts:l.quick.choices, correct:l.quick.a, ex:l.quick.ex }));
+  const fromQuiz = QUIZ.map(q => ({ q:q.q, opts:q.o, correct:q.c, ex:q.ex }));
+  return [...fromLessons, ...fromQuiz];
+}
+let popSet = [], popIdx = 0, popScore = 0, popDone = false;
+let popLastScore = SAVED && Number.isFinite(SAVED.popLastScore) ? SAVED.popLastScore : null;
+let popLastTotal = SAVED && Number.isFinite(SAVED.popLastTotal) ? SAVED.popLastTotal : null;
+let popAttemptsCount = SAVED && Number.isFinite(SAVED.popAttemptsCount) ? SAVED.popAttemptsCount : 0;
+function newPop(){
+  const pool = shuffled(popPool());
+  popSet = pool.slice(0, Math.min(5, pool.length));
+  popIdx = 0; popScore = 0; popDone = false;
+}
+function renderPop(){
+  if(!popSet.length) newPop();
+  if(popDone){
+    document.getElementById('toolWrap').innerHTML = `
+      <h3 style="color:var(--accent);margin-top:0">Pop Quiz</h3>
+      <p>Score: <b>${popScore} / ${popSet.length}</b></p>
+      <button class="ghost" id="popAgain">Try another 5</button>`;
+    document.getElementById('popAgain').onclick = () => { newPop(); renderPop(); };
+    return;
+  }
+  const it = popSet[popIdx];
+  document.getElementById('toolWrap').innerHTML = `
+    <h3 style="color:var(--accent);margin-top:0">Pop Quiz</h3>
+    <p style="color:var(--muted);font-size:13px">Question ${popIdx+1} of ${popSet.length} &middot; Score so far: ${popScore}</p>
+    <div class="qc"><p style="font-weight:600;font-size:14px;margin:0 0 6px">${it.q}</p>
+      <div id="popOpts">${it.opts.map((o,oi)=>`<button class="opt" data-oi="${oi}">${o}</button>`).join('')}</div>
+      <div class="explain" id="popEx"></div></div>
+    <button class="ghost" id="popNext" style="margin-top:12px;display:none">Next &rarr;</button>`;
+  document.getElementById('popOpts').addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if(!b || b.disabled) return;
+    const oi = +b.dataset.oi;
+    [...document.getElementById('popOpts').children].forEach((el,i) => {
+      el.disabled = true;
+      if(i===it.correct) el.classList.add('correct'); else if(i===oi) el.classList.add('wrong');
+    });
+    if(oi === it.correct) popScore++;
+    const ex = document.getElementById('popEx'); ex.textContent = it.ex; ex.style.display = 'block';
+    document.getElementById('popNext').style.display = 'inline-block';
+  });
+  document.getElementById('popNext').onclick = () => {
+    popIdx++;
+    if(popIdx >= popSet.length){
+      popDone = true;
+      popLastScore = popScore; popLastTotal = popSet.length; popAttemptsCount++;
+      saveState();
+    }
+    renderPop();
+  };
+}
+
+const CHEATSHEET = `
+  <h3 style="color:var(--accent);margin-top:0">Cheat Sheet</h3>
+  <table class="cheat">
+    <tr><th>Concept</th><th>Rule</th></tr>
+    <tr><td>Runtime estimate</td><td>battery mAh × efficiency ÷ total load mA ≈ hours</td></tr>
+    <tr><td>Power bank efficiency</td><td>~80-85% usable — cells are 3.7V, boosted to 5V with real conversion loss</td></tr>
+    <tr><td>Measure, don't guess</td><td>Use a USB power meter under real workload, not datasheet peak/idle figures</td></tr>
+    <tr><td>DSI vs HDMI touch</td><td>DSI = one cable, best drivers. HDMI touch = video cable + separate USB touch cable</td></tr>
+    <tr><td>Display rotation</td><td>Rotating video ≠ rotating touch — touch needs its own transform matrix</td></tr>
+    <tr><td>Build order rule</td><td>Electronics fully working loose on a bench, always before any enclosure work</td></tr>
+    <tr><td>Wiring</td><td>Route every wire with slack (a service loop) — taut wiring fails under flexing over time</td></tr>
+    <tr><td>Thermal throttling</td><td>The Pi downclocks itself when hot — looks like a slow machine, not a broken one</td></tr>
+    <tr><td>Heatsink rule</td><td>Only works with airflow — a heatsink in a sealed box is just extra thermal mass</td></tr>
+    <tr><td>Battery safety</td><td>Never use bare LiPo/Li-ion cells without a BMS (protection circuit)</td></tr>
+    <tr><td>Calculated vs measured runtime</td><td>Expect measured to run somewhat shorter — treat calculated as a floor, not a promise</td></tr>
+    <tr><td>OS trimming</td><td>Raspberry Pi OS Lite + minimal window manager saves real power/thermal headroom</td></tr>
+  </table>
+  <p style="color:var(--muted);font-size:12px;margin-top:10px">Full lesson content covers the reasoning
+     behind each row — this page is for last-minute recall, not first-time learning.</p>`;
+function renderCheat(){ document.getElementById('toolWrap').innerHTML = CHEATSHEET; }
+
+/* Power Budget Planner — the "Simulation" tab for a project with no circuit to
+   embed a simulator for. A real, working calculator: edit components and their
+   draw, set battery capacity + efficiency, get total load and estimated runtime. */
+let budgetComponents = (SAVED && Array.isArray(SAVED.budgetComponents)) ? SAVED.budgetComponents : [
+  { name:"Raspberry Pi (active load)", ma:900 },
+  { name:"7\" touchscreen (backlight on)", ma:300 },
+  { name:"Keyboard/mouse dongle", ma:50 }
+];
+let budgetBatteryMah = (SAVED && Number.isFinite(SAVED.budgetBatteryMah)) ? SAVED.budgetBatteryMah : 10000;
+let budgetEfficiencyPct = (SAVED && Number.isFinite(SAVED.budgetEfficiencyPct)) ? SAVED.budgetEfficiencyPct : 85;
+
+function budgetTotalMa(){ return budgetComponents.reduce((sum, c) => sum + (Number(c.ma) || 0), 0); }
+function budgetRuntimeHours(){
+  const total = budgetTotalMa();
+  if(total <= 0) return 0;
+  return (budgetBatteryMah * (budgetEfficiencyPct / 100)) / total;
+}
+function renderBudget(){
+  const total = budgetTotalMa();
+  const hours = budgetRuntimeHours();
+  document.getElementById('toolWrap').innerHTML = `
+    <h3 style="color:var(--accent);margin-top:0">Power Budget Planner</h3>
+    <p style="color:var(--muted);font-size:13px">Real calculator, not a toy — plan your actual build's
+       runtime here before buying a battery. Matches the math in Lesson 1.</p>
+    <table class="budget-table">
+      <tr><th>Component</th><th>Draw (mA)</th><th></th></tr>
+      ${budgetComponents.map((c,i)=>`
+        <tr>
+          <td><input type="text" data-i="${i}" data-f="name" value="${c.name.replace(/"/g,'&quot;')}"/></td>
+          <td><input type="number" data-i="${i}" data-f="ma" value="${c.ma}" min="0"/></td>
+          <td><button class="ghost" data-remove="${i}" style="padding:4px 10px">&times;</button></td>
+        </tr>`).join('')}
+    </table>
+    <button class="ghost" id="budgetAdd" style="margin-top:10px">+ Add component</button>
+    <div class="budget-controls">
+      <label>Battery capacity (mAh)<input type="number" id="budgetMah" value="${budgetBatteryMah}" min="0"/></label>
+      <label>Conversion efficiency (%)<input type="number" id="budgetEff" value="${budgetEfficiencyPct}" min="1" max="100"/></label>
+    </div>
+    <div class="budget-summary" id="budgetSummary">
+      <div><b id="budgetTotalMa">${total}</b><span>mA total load</span></div>
+      <div><b id="budgetUsableMah">${Math.round(budgetBatteryMah * (budgetEfficiencyPct/100))}</b><span>mAh usable</span></div>
+      <div><b id="budgetHours">${hours.toFixed(1)}h</b><span>estimated runtime</span></div>
+    </div>`;
+  // Editing name/mA/battery/efficiency only updates the summary numbers in place —
+  // a full renderBudget() on every keystroke would rebuild every <input> and steal
+  // focus after each character typed, making the text fields unusable.
+  function refreshSummary(){
+    const t = budgetTotalMa();
+    document.getElementById('budgetTotalMa').textContent = t;
+    document.getElementById('budgetUsableMah').textContent = Math.round(budgetBatteryMah * (budgetEfficiencyPct/100));
+    document.getElementById('budgetHours').textContent = budgetRuntimeHours().toFixed(1) + 'h';
+  }
+  document.querySelectorAll('.budget-table input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const i = +inp.dataset.i, f = inp.dataset.f;
+      budgetComponents[i][f] = f === 'ma' ? Number(inp.value) : inp.value;
+      saveState();
+      refreshSummary();
+    });
+  });
+  document.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.onclick = () => { budgetComponents.splice(+btn.dataset.remove, 1); saveState(); renderBudget(); };
+  });
+  document.getElementById('budgetAdd').onclick = () => {
+    budgetComponents.push({ name:"New component", ma:0 }); saveState(); renderBudget();
+  };
+  document.getElementById('budgetMah').addEventListener('input', e => { budgetBatteryMah = Number(e.target.value) || 0; saveState(); refreshSummary(); });
+  document.getElementById('budgetEff').addEventListener('input', e => { budgetEfficiencyPct = Number(e.target.value) || 0; saveState(); refreshSummary(); });
+}
+
+function letterGrade(pct){
+  if(pct === null) return { text:'—', cls:'grade-dash' };
+  if(pct >= 90) return { text:'A', cls:'grade-A' };
+  if(pct >= 80) return { text:'B', cls:'grade-B' };
+  if(pct >= 70) return { text:'C', cls:'grade-C' };
+  if(pct >= 60) return { text:'D', cls:'grade-D' };
+  return { text:'F', cls:'grade-F' };
+}
+function renderReportCard(){
+  const lessonsDone = answered.filter(Boolean).length;
+  const quizPct = QUIZ.length ? Math.round((score / QUIZ.length) * 100) : null;
+  const quizAttempted = done.size > 0;
+  const grade = letterGrade(quizAttempted ? quizPct : null);
+  const overallItems = lessonsDone + (quizAttempted ? 1 : 0);
+  const overallTotal = LESSONS.length + 1;
+  const overallPct = Math.round((overallItems / overallTotal) * 100);
+  const now = new Date();
+  document.getElementById('toolWrap').innerHTML = `
+    <div class="report-card">
+      <h3 style="color:var(--accent);margin-top:0">Report Card</h3>
+      <p style="color:var(--muted);font-size:12px;margin-top:-6px">Cyberdeck Build &middot; generated ${now.toLocaleDateString()} ${now.toLocaleTimeString()}</p>
+      <div class="report-overall">
+        <span class="big ${grade.cls}">${grade.text}</span>
+        <span style="color:var(--muted);font-size:13px">Final quiz grade${quizAttempted ? '' : ' (not yet taken)'}</span>
+      </div>
+      <h4>Lessons</h4>
+      <div class="report-row"><span>Quick checks completed</span><span class="grade">${lessonsDone} / ${LESSONS.length}</span></div>
+      <h4>Final Quiz</h4>
+      <div class="report-row"><span>Score</span><span class="grade">${quizAttempted ? `${score} / ${QUIZ.length} (${quizPct}%)` : 'Not attempted'}</span></div>
+      <h4>Pop Quiz</h4>
+      <div class="report-row"><span>Most recent 5-question run</span><span class="grade">${popLastScore !== null ? `${popLastScore} / ${popLastTotal}` : 'Not attempted'}</span></div>
+      <div class="report-row"><span>Runs completed</span><span class="grade">${popAttemptsCount}</span></div>
+      <h4>Flashcards</h4>
+      <div class="report-row"><span>Terms marked known</span><span class="grade">${fcKnown.size} / ${KEY_TERMS.length}</span></div>
+      <h4>Match Game</h4>
+      <div class="report-row"><span>Best round (fewest attempts)</span><span class="grade">${matchBestAttempts !== null ? matchBestAttempts : 'Not completed'}</span></div>
+      <h4>Power Budget Planner</h4>
+      <div class="report-row"><span>Current plan's estimated runtime</span><span class="grade">${budgetRuntimeHours().toFixed(1)} hours</span></div>
+      <h4>Overall</h4>
+      <div class="report-row"><span>Lessons + quiz completed</span><span class="grade">${overallItems} / ${overallTotal} (${overallPct}%)</span></div>
+      <button class="ghost" id="printBtn">🖨️ Print / Save as PDF</button>
+      <p style="color:var(--muted);font-size:11px;margin-top:8px">In the print dialog, choose <b>Save as PDF</b> and
+         save it into this project's <code>docs/</code> folder to keep a dated record.</p>
+    </div>`;
+  document.getElementById('printBtn').onclick = () => window.print();
+}
+
+document.getElementById('pills').addEventListener('click', e => {
+  const p = e.target.closest('.pill'); if(!p) return; idx = +p.dataset.i; render();
+});
+document.getElementById('prev').onclick = () => { if(idx>0){ idx--; render(); } };
+document.getElementById('next').onclick = () => { if(idx<LESSONS.length){ idx++; render(); } };
+render();
+</script>
+</body></html>
